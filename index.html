@@ -6,6 +6,7 @@
   <title>Premium Key Generator</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    /* Ваши стили остаются без изменений */
     :root {
       --primary: #ffffff;
       --primary-dark: #e0e0e0;
@@ -854,8 +855,8 @@
     let keyGeneratedTime = 0;
     const KEY_EXPIRY_HOURS = 12;
     const checkpointLinks = [
-      'https://link-center.net/1355494/LIBbq8nqkB8S',
-      'https://direct-link.net/1355494/NNWeSqKwzvqT'
+      'https://example.com/checkpoint1',
+      'https://example.com/checkpoint2'
     ];
     let refreshTimer = null;
     // Идентификатор сессии для предотвращения обновления страницы
@@ -1002,8 +1003,8 @@
       localStorage.setItem('currentCheckpoint', step.toString());
       localStorage.setItem('checkpointSession', sessionId);
       
-      window.open(url, '_blank');
-      closeModal();
+      // Открываем ссылку в текущей вкладке
+      window.location.href = url;
     }
     
     function updateProgress() {
