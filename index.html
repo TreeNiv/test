@@ -85,6 +85,81 @@
       margin-bottom: 20px;
     }
 
+    /* Privacy Policy Modal */
+    #privacyModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    }
+
+    .privacy-box {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: left;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .privacy-box h2 {
+      margin-bottom: 20px;
+      color: var(--primary);
+      font-size: 1.8rem;
+      text-align: center;
+    }
+
+    .privacy-box p {
+      margin-bottom: 15px;
+      color: var(--secondary);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .privacy-box ul {
+      margin-bottom: 15px;
+      padding-left: 20px;
+      color: var(--secondary);
+    }
+
+    .privacy-box li {
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .privacy-actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 25px;
+    }
+
+    .privacy-accept {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--dark);
+      border: none;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .privacy-accept:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    }
+
     /* Анимированный фон с эффектами */
     .background-effects {
       position: fixed;
@@ -632,6 +707,14 @@
       .captcha-box h2 {
         font-size: 1.5rem;
       }
+
+      .privacy-box {
+        padding: 20px 15px;
+      }
+
+      .privacy-box h2 {
+        font-size: 1.5rem;
+      }
     }
  
     /* Анимации */
@@ -654,6 +737,34 @@
       <p>Please complete the verification to access the key generator</p>
       <div class="g-recaptcha" data-sitekey="6LdrH1ArAAAAACZHGZkoWBJJjbEiEr2WezfHrW9Z" data-callback="onVerified"></div>
       <p style="margin-top: 15px; color: var(--secondary);">This helps us prevent bot activity and ensure fair access for all users.</p>
+    </div>
+  </div>
+
+  <!-- Privacy Policy Modal -->
+  <div id="privacyModal">
+    <div class="privacy-box">
+      <h2>Privacy & Cookie Policy Notice</h2>
+      <p>Welcome! To provide you with the best possible experience on our site, including saving your progress, remembering your generated keys, and enabling important features, we collect some non-personally-identifiable information from your browser.</p>
+      
+      <p>Here's what you need to know:</p>
+      
+      <ul>
+        <li>When you use our key system and services, we store a unique identifier in your browser's local storage (similar to a cookie). This identifier helps us recognize your device and maintain your session data, so you don't lose your progress or previously generated keys.</li>
+        <li>We also log your IP address temporarily for security and analytics purposes. This information helps us detect fraudulent activity and improve our services.</li>
+        <li>None of your data is shared with third parties or used beyond what is necessary to operate and secure the site.</li>
+        <li>Your unique identifier and IP address are automatically deleted after 7-10 days of inactivity.</li>
+        <li>You have full control over your privacy settings and can delete this data anytime by clearing your browser storage or using the "Forget Browser" option if available.</li>
+      </ul>
+      
+      <p>By clicking "Accept", you consent to our use of this information as described above. If you choose not to accept, some features on the site may not work properly or be available.</p>
+      
+      <p>If you have any questions about how we protect your privacy, please read our full Privacy Policy or contact us directly.</p>
+      
+      <p>Thank you for trusting us!</p>
+      
+      <div class="privacy-actions">
+        <button class="privacy-accept" id="privacyAcceptBtn">I Accept</button>
+      </div>
     </div>
   </div>
 
@@ -769,9 +880,16 @@
     function onVerified(response) {
       // Капча пройдена
       document.getElementById("captchaContainer").style.display = "none";
+      // Показываем модальное окно с политикой конфиденциальности
+      document.getElementById("privacyModal").style.display = "flex";
+    }
+
+    // Обработчик принятия политики конфиденциальности
+    document.getElementById('privacyAcceptBtn').addEventListener('click', function() {
+      document.getElementById("privacyModal").style.display = "none";
       document.querySelector(".container").style.display = "block";
       initBackgroundEffects();
-    }
+    });
 
     // Инициализация фоновых эффектов
     function initBackgroundEffects() {
