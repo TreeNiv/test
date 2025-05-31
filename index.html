@@ -975,13 +975,21 @@
 
   const storedToken = localStorage.getItem('checkpointToken');
  
-  if (checkpoint === 'completed' && returnedToken === storedToken) {
-    localStorage.setItem('step1Completed', 'true'); // флаг
-    checkpointCompleted = true;
-    currentStep = 1;
-    updateProgress();
-    showToast('Checkpoint 1 completed!');
-  }
+if (checkpoint === 'completed' && returnedToken === storedToken) {
+  // Сохраняем флаги
+  localStorage.setItem('step1Completed', 'true');
+  localStorage.setItem('accessToken2', 'valid');
+  localStorage.setItem('checkpointPassed1', 'true');
+
+  // Обновляем прогресс и показываем уведомление
+  checkpointCompleted = true;
+  currentStep = 1;
+  updateProgress();
+  showToast('Checkpoint 1 completed!');
+
+  // Переход на второй сайт
+  window.location.href = 'https://treeniv.github.io/treenivkeysys/';
+}
  
   startBtn.addEventListener('click', startProcess);
   continueBtn.addEventListener('click', continueProcess);
@@ -1030,12 +1038,6 @@
   // Перенаправление с токеном
   window.location.href = checkpointLinks[0] + '?token=' + token + '&source=' + encodeURIComponent(window.location.href);
 }
-
-// Первый сайт, перед редиректом на второй сайт:
-localStorage.setItem('accessToken2', 'valid'); // можно использовать случайную строку
-localStorage.setItem('checkpointPassed1', 'true');
-window.location.href = 'https://treeniv.github.io/treenivkeysys/'; // редирект на второй сайт
-
  
     function continueProcess() {
       // На первой странице кнопка Continue неактивна
