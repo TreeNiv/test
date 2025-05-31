@@ -919,7 +919,20 @@ const progressText3 = document.getElementById('progressText3');
 const keyCount = document.getElementById('keyCount');
 const timeLeft = document.getElementById('timeLeft');
 const statusText = document.getElementById('statusText');
-const checkpointModal = document.getElementById('checkpointModal');
+const checkpointModal = document.createElement('div');
+checkpointModal.id = 'checkpointModal';
+checkpointModal.className = 'checkpoint-modal';
+checkpointModal.innerHTML = `
+  <div class="modal-content">
+    <h2 id="modalTitle">Checkpoint</h2>
+    <p id="modalText">Please visit the following link and return to this page to continue.</p>
+    <div class="modal-actions">
+      <button class="btn btn-success" id="visitLinkBtn">Visit Link</button>
+      <button class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+    </div>
+  </div>
+`;
+document.body.appendChild(checkpointModal);
 const modalTitle = document.getElementById('modalTitle');
 const modalText = document.getElementById('modalText');
 const visitLinkBtn = document.getElementById('visitLinkBtn');
@@ -929,12 +942,12 @@ const keyInput = document.getElementById('keyInput');
 const keyHistoryList = document.getElementById('keyHistoryList');
 
 // State
-let currentStep = 0;
+let currentStep = 1;
 let generatedKey = '';
 let keyGeneratedTime = 0;
 const KEY_EXPIRY_HOURS = 12;
 const checkpointLinks = [
-  'https://link-center.net/1342865/uPa2M6jMr9Do',
+  'https://link-hub.net/1342865/LDbN33zwmjYB',
   'https://example.com/checkpoint2'
 ];
 const adLink = 'https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4';
@@ -982,7 +995,6 @@ function openCheckpointModal() {
   }
 }
 
-// Добавляем недостающую функцию
 function canGenerateKey() {
   const storedTime = localStorage.getItem('generatedTime');
   if (!storedTime) return true;
@@ -994,7 +1006,6 @@ function canGenerateKey() {
   return elapsed > expiryTime;
 }
 
-// Исправляем функцию handleAdBeforeCheckpoint
 function handleAdBeforeCheckpoint(checkpointUrl, checkpointNumber) {
   let adShownCount = parseInt(localStorage.getItem('adShownCount')) || 0;
   adShownCount++;
@@ -1019,13 +1030,14 @@ function handleAdBeforeCheckpoint(checkpointUrl, checkpointNumber) {
   }
 }
 
-// Добавляем обработчики событий в функцию init
+// Initialize
 function init() {
+  initBackgroundEffects();
   checkStoredKey();
   updateProgress();
   updateTimer();
   loadKeyHistory();
-
+  
   // Проверяем, вернулись ли мы с чекпоинта
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.has('checkpoint')) {
@@ -1043,28 +1055,13 @@ function init() {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
-
-  // Добавляем обработчики событий
+  
   startBtn.addEventListener('click', startProcess);
   continueBtn.addEventListener('click', continueProcess);
   generateBtn.addEventListener('click', generateKey);
   copyBtn.addEventListener('click', copyKey);
-  visitLinkBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-  });
   cancelModalBtn.addEventListener('click', closeModal);
 }
-
-  // Добавляем обработчики событий
-  startBtn.addEventListener('click', startProcess);
-  continueBtn.addEventListener('click', continueProcess);
-  generateBtn.addEventListener('click', generateKey);
-  copyBtn.addEventListener('click', copyKey);
-  visitLinkBtn.addEventListener('click', function(e) {
-    e.preventDefault(); // Предотвращаем стандартное поведение
-  });
-  cancelModalBtn.addEventListener('click', closeModal);
-
 
 function closeModal() {
   checkpointModal.classList.remove('active');
