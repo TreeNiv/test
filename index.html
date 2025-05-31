@@ -1050,6 +1050,17 @@ function init() {
   generateBtn.addEventListener('click', generateKey);
   copyBtn.addEventListener('click', copyKey);
   visitLinkBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+  });
+  cancelModalBtn.addEventListener('click', closeModal);
+}
+
+  // Добавляем обработчики событий
+  startBtn.addEventListener('click', startProcess);
+  continueBtn.addEventListener('click', continueProcess);
+  generateBtn.addEventListener('click', generateKey);
+  copyBtn.addEventListener('click', copyKey);
+  visitLinkBtn.addEventListener('click', function(e) {
     e.preventDefault(); // Предотвращаем стандартное поведение
   });
   cancelModalBtn.addEventListener('click', closeModal);
@@ -1135,6 +1146,23 @@ function generateRandomKey() {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
+}
+
+function loadKeyHistory() {
+  const history = JSON.parse(localStorage.getItem('keyHistory')) || [];
+  keyHistoryList.innerHTML = '';
+
+  if (history.length === 0) {
+    keyHistoryList.innerHTML = '<li>No previous keys</li>';
+    return;
+  }
+
+  const recentKeys = history.slice(-5).reverse();
+  recentKeys.forEach((key, index) => {
+    const li = document.createElement('li');
+    li.textContent = key;
+    keyHistoryList.appendChild(li);
+  });
 }
 
 function sendKeyToGoogleSheets(key) {
