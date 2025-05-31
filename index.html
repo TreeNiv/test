@@ -1099,7 +1099,7 @@ function startProcess() {
         if (elapsed < expiryTime) {
           generatedKey = storedKey;
           keyGeneratedTime = parseInt(storedTime);
-          keyDisplay.innerHTML = <div class="key">${storedKey}</div>;
+          keyDisplay.innerHTML = `<div class="key">${storedKey}</div>`;
           keyTitle.textContent = 'YOUR PREMIUM KEY';
           copyBtn.disabled = false;
           statusText.textContent = 'ACTIVE';
@@ -1149,7 +1149,7 @@ function startProcess() {
       const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
  
-      timeLeft.textContent = ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')};
+      timeLeft.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
  
     function showToast(message) {
