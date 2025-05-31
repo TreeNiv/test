@@ -1047,16 +1047,13 @@ function openCheckpoint() {
 }
 
 function showAdForCheckpoint() {
-  const adClickKey = `adClickCount_${currentCheckpoint}_${sessionId}`; // Уникальный ключ для сессии
+  const adClickKey = `adClickCount_${currentCheckpoint}_${sessionId}`;
   
   let adClickCount = parseInt(localStorage.getItem(adClickKey)) || 0;
 
   if (adClickCount < 2) {
     // Показываем рекламу (если еще не 2 раза)
     window.open(adLink, '_blank');
-    adClickCount++;
-    localStorage.setItem(adClickKey, adClickCount.toString());
-    showToast(`Please visit the ad link (${adClickCount}/2)`);
     
     // Если это первый клик, не делаем ничего (ждем второй)
     if (adClickCount === 1) return;
@@ -1065,18 +1062,6 @@ function showAdForCheckpoint() {
   // Если реклама показана 2 раза - открываем чекпоинт
   openCheckpoint();
 }
-
-  adClickCount++;
-  localStorage.setItem(adClickKey, adClickCount.toString());
-
-  if (adClickCount < 2) {
-    window.open(adLink, '_blank');
-    showToast(`Please visit the ad link (${adClickCount}/2)`);
-  } else {
-    localStorage.setItem(adShownKey, 'true');
-    completeCheckpoint();
-  }
-
 
 function completeCheckpoint() {
   if (currentCheckpoint === 0) {
@@ -1093,8 +1078,8 @@ function completeCheckpoint() {
 }
 
 function openCheckpoint() {
+  // Удаляем дублированную версию этой функции
   if (currentCheckpoint === 0) {
-    // Первый чекпоинт
     modalTitle.textContent = 'Checkpoint 1';
     modalText.textContent = 'Please visit the following link and return to this page to continue.';
     visitLinkBtn.onclick = function() {
@@ -1102,7 +1087,6 @@ function openCheckpoint() {
     };
     checkpointModal.classList.add('active');
   } else if (currentCheckpoint === 1) {
-    // Второй чекпоинт
     modalTitle.textContent = 'Checkpoint 2';
     modalText.textContent = 'Please visit the following link and return to this page to continue.';
     visitLinkBtn.onclick = function() {
