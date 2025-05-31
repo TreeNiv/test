@@ -1014,47 +1014,31 @@ function addToHistory(key) {
   loadKeyHistory();
 }
 
+// ... остальной твой код ...
+
 function startProcess() {
   if (!canGenerateKey()) {
     showToast('You can generate a key only once every 12 hours');
     return;
   }
   currentCheckpoint = 0;
-  // Сброс
-  localStorage.removeItem('adShownForCheckpoint0');
-  localStorage.removeItem('adShownForCheckpoint0_clicks');
-
   showAdForCheckpoint();
 }
 
 function continueProcess() {
   currentCheckpoint = 1;
-  // Сброс
-  localStorage.removeItem('adShownForCheckpoint1');
-  localStorage.removeItem('adShownForCheckpoint1_clicks');
-
   showAdForCheckpoint();
-}
-
-function continueProcess() {
-  // Продолжаем процесс для второго чекпоинта
-  adClickCount = 0;
-  currentCheckpoint = 1;
-  adShownForCurrentCheckpoint = false;
-  localStorage.removeItem('adShownForCheckpoint1');
-  localStorage.removeItem('adShownForCheckpoint1_clicks');
 }
 
 function showAdForCheckpoint() {
   const adShownKey = `adShownForCheckpoint${currentCheckpoint}`;
   const adClickKey = `${adShownKey}_clicks`;
 
-  // Проверяем, была ли уже показана реклама для этого чекпоинта
   let adShown = localStorage.getItem(adShownKey) === 'true';
   let adClickCount = parseInt(localStorage.getItem(adClickKey)) || 0;
 
   if (adShown) {
-    // Если уже была показана — сразу открываем чекпоинт
+    // Уже показано — открываем чекпоинт
     openCheckpoint();
     return;
   }
@@ -1066,12 +1050,23 @@ function showAdForCheckpoint() {
     window.open(adLink, '_blank');
     showToast(`Please visit the ad link (${adClickCount}/2)`);
   } else {
+    // После второго клика отмечаем, что реклама показана
     localStorage.setItem(adShownKey, 'true');
     setTimeout(() => {
       openCheckpoint();
     }, 1000);
   }
 }
+
+// После прохождения всего процесса (например, при генерации ключа или по завершении чекпоинта) — сбрасывай эти флаги и счетчики:
+function resetAdCheckpointProgress() {
+  localStorage.removeItem('adShownForCheckpoint0');
+  localStorage.removeItem('adShownForCheckpoint0_clicks');
+  localStorage.removeItem('adShownForCheckpoint1');
+  localStorage.removeItem('adShownForCheckpoint1_clicks');
+}
+
+// Например, вызови resetAdCheckpointProgress() после истечения времени ключа или когда пользователь прошёл оба чекпоинта.
 
 function openCheckpoint() {
   if (currentCheckpoint === 0) {
