@@ -1014,20 +1014,46 @@ function addToHistory(key) {
   loadKeyHistory();
 }
 
-// ... остальной твой код ...
-
 function startProcess() {
   if (!canGenerateKey()) {
     showToast('You can generate a key only once every 12 hours');
     return;
   }
   currentCheckpoint = 0;
-  showAdForCheckpoint();
+  openCheckpoint(); // Сначала открываем чекпоинт
 }
 
 function continueProcess() {
   currentCheckpoint = 1;
-  showAdForCheckpoint();
+  openCheckpoint(); // Сначала открываем чекпоинт
+}
+
+function openCheckpoint() {
+  // Проверяем, вернулись ли мы с чекпоинта
+  const urlParams = new URLSearchParams(window.location.search);
+  const checkpointReturned = urlParams.has('checkpoint');
+  
+  if (!checkpointReturned) {
+    // Если не вернулись с чекпоинта - открываем его
+    if (currentCheckpoint === 0) {
+      modalTitle.textContent = 'Checkpoint 1';
+      modalText.textContent = 'Please visit the following link and return to this page to continue.';
+      visitLinkBtn.onclick = function() {
+        window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=1';
+      };
+      checkpointModal.classList.add('active');
+    } else if (currentCheckpoint === 1) {
+      modalTitle.textContent = 'Checkpoint 2';
+      modalText.textContent = 'Please visit the following link and return to this page to continue.';
+      visitLinkBtn.onclick = function() {
+        window.location.href = checkpointLinks[1] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=2';
+      };
+      checkpointModal.classList.add('active');
+    }
+  } else {
+    // Если вернулись с чекпоинта - показываем рекламу
+    showAdForCheckpoint();
+  }
 }
 
 function showAdForCheckpoint() {
@@ -1038,35 +1064,36 @@ function showAdForCheckpoint() {
   let adClickCount = parseInt(localStorage.getItem(adClickKey)) || 0;
 
   if (adShown) {
-    // Уже показано — открываем чекпоинт
-    openCheckpoint();
+    // Если реклама уже была показана - переходим к следующему шагу
+    completeCheckpoint();
     return;
   }
 
   adClickCount++;
-  localStorage.setItem(adClickKey, adClickCount);
+  localStorage.setItem(adClickKey, adClickCount.toString());
 
   if (adClickCount < 2) {
     window.open(adLink, '_blank');
     showToast(`Please visit the ad link (${adClickCount}/2)`);
   } else {
-    // После второго клика отмечаем, что реклама показана
     localStorage.setItem(adShownKey, 'true');
-    setTimeout(() => {
-      openCheckpoint();
-    }, 1000);
+    completeCheckpoint();
   }
 }
 
-// После прохождения всего процесса (например, при генерации ключа или по завершении чекпоинта) — сбрасывай эти флаги и счетчики:
-function resetAdCheckpointProgress() {
-  localStorage.removeItem('adShownForCheckpoint0');
-  localStorage.removeItem('adShownForCheckpoint0_clicks');
-  localStorage.removeItem('adShownForCheckpoint1');
-  localStorage.removeItem('adShownForCheckpoint1_clicks');
+function completeCheckpoint() {
+  if (currentCheckpoint === 0) {
+    currentStep = 1;
+    showToast('Checkpoint 1 completed!');
+  } else if (currentCheckpoint === 1) {
+    currentStep = 2;
+    showToast('Checkpoint 2 completed!');
+  }
+  updateProgress();
+  
+  // Очищаем параметры URL
+  window.history.replaceState({}, document.title, window.location.pathname);
 }
-
-// Например, вызови resetAdCheckpointProgress() после истечения времени ключа или когда пользователь прошёл оба чекпоинта.
 
 function openCheckpoint() {
   if (currentCheckpoint === 0) {
