@@ -932,10 +932,6 @@ function initBackgroundEffects() {
     const keyInput = document.getElementById('keyInput');
     const keyHistoryList = document.getElementById('keyHistoryList');
 
-    const adLink = "https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4";
-    const clickKey = "adClicks_step1"; // уникальный ключ для этапа 1
-    const requiredClicks = 2; // сколько раз надо открыть рекламу
- 
     // State
     let currentStep = 0;
     let generatedKey = '';
@@ -984,7 +980,6 @@ function initBackgroundEffects() {
       continueBtn.addEventListener('click', continueProcess);
       generateBtn.addEventListener('click', generateKey);
       copyBtn.addEventListener('click', copyKey);
-      visitLinkBtn.addEventListener('click', visitCheckpointLink);
       cancelModalBtn.addEventListener('click', closeModal);
     }
  
@@ -1013,8 +1008,12 @@ function initBackgroundEffects() {
       loadKeyHistory();
     }
  
+// рекламные переменные
+const adLink = "https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4";
+const adClickKey = "adClicks_step1";
+const requiredAdClicks = 2;
+
 function startProcess() {
-  // Проверяем, можно ли начать процесс
   if (!canGenerateKey()) {
     showToast('You can generate a key only once every 12 hours');
     return;
@@ -1028,7 +1027,6 @@ function startProcess() {
     localStorage.setItem(adClickKey, adClicks);
     let left = requiredAdClicks - adClicks;
     if (left > 0) {
-    }
     return;
   }
 
