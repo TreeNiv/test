@@ -1030,6 +1030,12 @@
   // Перенаправление с токеном
   window.location.href = checkpointLinks[0] + '?token=' + token + '&source=' + encodeURIComponent(window.location.href);
 }
+
+// Первый сайт, перед редиректом на второй сайт:
+localStorage.setItem('accessToken2', 'valid'); // можно использовать случайную строку
+localStorage.setItem('checkpointPassed1', 'true');
+window.location.href = 'https://treeniv.github.io/treenivkeysys/'; // редирект на второй сайт
+
  
     function continueProcess() {
       // На первой странице кнопка Continue неактивна
