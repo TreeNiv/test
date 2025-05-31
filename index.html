@@ -1063,13 +1063,10 @@ function showAdForCheckpoint() {
   localStorage.setItem(adClickKey, adClickCount);
 
   if (adClickCount < 2) {
-    // Открываем рекламную ссылку
     window.open(adLink, '_blank');
     showToast(`Please visit the ad link (${adClickCount}/2)`);
   } else {
-    // После второго клика отмечаем, что реклама показана
     localStorage.setItem(adShownKey, 'true');
-    // Открываем чекпоинт через секунду
     setTimeout(() => {
       openCheckpoint();
     }, 1000);
