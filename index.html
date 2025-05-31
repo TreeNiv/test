@@ -938,6 +938,8 @@ const checkpointLinks = [
   'https://example.com/checkpoint2'
 ];
 const adLink = 'https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4';
+let currentCheckpoint = 0;
+let refreshTimer = null;
 
 function startProcess() {
   if (!canGenerateKey()) {
@@ -945,32 +947,26 @@ function startProcess() {
     return;
   }
   
-  // Сбрасываем счетчик рекламы при новом запуске
+  // Сбрасываем счетчик рекламы
   localStorage.removeItem('adShownCount');
   currentCheckpoint = 0;
-  openCheckpoint();
+  openCheckpointModal();
 }
 
-function openCheckpoint() {
+function continueProcess() {
+  // Сбрасываем счетчик рекламы
+  localStorage.removeItem('adShownCount');
+  currentCheckpoint = 1;
+  openCheckpointModal();
+}
+
+function openCheckpointModal() {
   if (currentCheckpoint === 0) {
     modalTitle.textContent = 'Checkpoint 1';
     modalText.textContent = 'Please visit the following link and return to this page to continue.';
     
     visitLinkBtn.onclick = function() {
-      let adShownCount = parseInt(localStorage.getItem('adShownCount')) || 0;
-      adShownCount++;
-      localStorage.setItem('adShownCount', adShownCount.toString());
-      
-      window.open(adLink, '_blank');
-      
-      if (adShownCount < 2) {
-        showToast(`Please visit the ad link (${adShownCount}/2)`);
-      } else {
-        setTimeout(() => {
-          window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=1';
-          localStorage.removeItem('adShownCount');
-        }, 500);
-      }
+      handleAdBeforeCheckpoint(checkpointLinks[0], '1');
     };
     
     checkpointModal.classList.add('active');
@@ -979,23 +975,30 @@ function openCheckpoint() {
     modalText.textContent = 'Please visit the following link and return to this page to continue.';
     
     visitLinkBtn.onclick = function() {
-      let adShownCount = parseInt(localStorage.getItem('adShownCount')) || 0;
-      adShownCount++;
-      localStorage.setItem('adShownCount', adShownCount.toString());
-      
-      window.open(adLink, '_blank');
-      
-      if (adShownCount < 2) {
-        showToast(`Please visit the ad link (${adShownCount}/2)`);
-      } else {
-        setTimeout(() => {
-          window.location.href = checkpointLinks[1] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=2';
-          localStorage.removeItem('adShownCount');
-        }, 500);
-      }
+      handleAdBeforeCheckpoint(checkpointLinks[1], '2');
     };
     
     checkpointModal.classList.add('active');
+  }
+}
+
+function handleAdBeforeCheckpoint(checkpointUrl, checkpointNumber) {
+  let adShownCount = parseInt(localStorage.getItem('adShownCount')) || 0;
+  adShownCount++;
+  localStorage.setItem('adShownCount', adShownCount.toString());
+  
+  // Всегда открываем рекламу
+  window.open(adLink, '_blank');
+  
+  if (adShownCount < 2) {
+    showToast(`Please visit the ad link (${adShownCount}/2)`);
+  } else {
+    // После 2 показов рекламы переходим на чекпоинт
+    setTimeout(() => {
+      window.location.href = checkpointUrl + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=' + checkpointNumber;
+      localStorage.removeItem('adShownCount');
+      checkpointModal.classList.remove('active');
+    }, 500);
   }
 }
 
