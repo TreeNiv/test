@@ -1020,54 +1020,51 @@ function startProcess() {
     return;
   }
   currentCheckpoint = 0;
-  openCheckpoint(); // Сначала открываем чекпоинт
+  showAdForCheckpoint(); // Сразу показываем рекламу (2 раза)
 }
 
 function continueProcess() {
   currentCheckpoint = 1;
-  openCheckpoint(); // Сначала открываем чекпоинт
+  showAdForCheckpoint(); // Сразу показываем рекламу (2 раза)
 }
 
 function openCheckpoint() {
-  // Проверяем, вернулись ли мы с чекпоинта
-  const urlParams = new URLSearchParams(window.location.search);
-  const checkpointReturned = urlParams.has('checkpoint');
-  
-  if (!checkpointReturned) {
-    // Если не вернулись с чекпоинта - открываем его
-    if (currentCheckpoint === 0) {
-      modalTitle.textContent = 'Checkpoint 1';
-      modalText.textContent = 'Please visit the following link and return to this page to continue.';
-      visitLinkBtn.onclick = function() {
-        window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=1';
-      };
-      checkpointModal.classList.add('active');
-    } else if (currentCheckpoint === 1) {
-      modalTitle.textContent = 'Checkpoint 2';
-      modalText.textContent = 'Please visit the following link and return to this page to continue.';
-      visitLinkBtn.onclick = function() {
-        window.location.href = checkpointLinks[1] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=2';
-      };
-      checkpointModal.classList.add('active');
-    }
-  } else {
-    // Если вернулись с чекпоинта - показываем рекламу
-    showAdForCheckpoint();
+  if (currentCheckpoint === 0) {
+    modalTitle.textContent = 'Checkpoint 1';
+    modalText.textContent = 'Please visit the following link and return to this page to continue.';
+    visitLinkBtn.onclick = function() {
+      window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=1';
+    };
+    checkpointModal.classList.add('active');
+  } else if (currentCheckpoint === 1) {
+    modalTitle.textContent = 'Checkpoint 2';
+    modalText.textContent = 'Please visit the following link and return to this page to continue.';
+    visitLinkBtn.onclick = function() {
+      window.location.href = checkpointLinks[1] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=2';
+    };
+    checkpointModal.classList.add('active');
   }
 }
 
 function showAdForCheckpoint() {
-  const adShownKey = `adShownForCheckpoint${currentCheckpoint}`;
-  const adClickKey = `${adShownKey}_clicks`;
-
-  let adShown = localStorage.getItem(adShownKey) === 'true';
+  const adClickKey = `adClickCount_${currentCheckpoint}_${sessionId}`; // Уникальный ключ для сессии
+  
   let adClickCount = parseInt(localStorage.getItem(adClickKey)) || 0;
 
-  if (adShown) {
-    // Если реклама уже была показана - переходим к следующему шагу
-    completeCheckpoint();
-    return;
+  if (adClickCount < 2) {
+    // Показываем рекламу (если еще не 2 раза)
+    window.open(adLink, '_blank');
+    adClickCount++;
+    localStorage.setItem(adClickKey, adClickCount.toString());
+    showToast(`Please visit the ad link (${adClickCount}/2)`);
+    
+    // Если это первый клик, не делаем ничего (ждем второй)
+    if (adClickCount === 1) return;
   }
+
+  // Если реклама показана 2 раза - открываем чекпоинт
+  openCheckpoint();
+}
 
   adClickCount++;
   localStorage.setItem(adClickKey, adClickCount.toString());
