@@ -935,97 +935,48 @@ let keyGeneratedTime = 0;
 const KEY_EXPIRY_HOURS = 12;
 const checkpointLinks = [
   'https://link-center.net/1342865/uPa2M6jMr9Do',
+  'https://example.com/checkpoint2' // Добавьте второй чекпоинт
 ];
 const adLink = 'https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4';
-let adClickCount = 0;
+let adClickCount = 0; // Счетчик кликов по рекламе
 let currentCheckpoint = 0;
 let refreshTimer = null;
-let sessionId = Date.now().toString();
-let adShownForCurrentCheckpoint = false;
-
-// Проверка, можно ли генерировать ключ
-function canGenerateKey() {
-  const storedTime = localStorage.getItem('generatedTime');
-  if (!storedTime) return true;
-
-  const now = Date.now();
-  const elapsed = now - parseInt(storedTime);
-  const expiryTime = KEY_EXPIRY_HOURS * 60 * 60 * 1000;
-
-  return elapsed > expiryTime;
-}
-
-// Initialize
-function init() {
-  checkStoredKey();
-  updateProgress();
-  updateTimer();
-  loadKeyHistory();
-
-  // Проверяем, вернулись ли мы с чекпоинта
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has('checkpoint')) {
-    const checkpoint = urlParams.get('checkpoint');
-    
-    if (checkpoint === '1') {
-      currentStep = 1;
-      updateProgress();
-      showToast('Checkpoint 1 completed!');
-      // Очищаем параметры URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (checkpoint === '2') {
-      currentStep = 2;
-      updateProgress();
-      showToast('Checkpoint 2 completed!');
-      // Очищаем параметры URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }
-
-  startBtn.addEventListener('click', startProcess);
-  continueBtn.addEventListener('click', continueProcess);
-  generateBtn.addEventListener('click', generateKey);
-  copyBtn.addEventListener('click', copyKey);
-  visitLinkBtn.addEventListener('click', visitCheckpointLink);
-  cancelModalBtn.addEventListener('click', closeModal);
-}
-
-function loadKeyHistory() {
-  const history = JSON.parse(localStorage.getItem('keyHistory')) || [];
-  keyHistoryList.innerHTML = '';
-
-  if (history.length === 0) {
-    keyHistoryList.innerHTML = '<li>No previous keys</li>';
-    return;
-  }
-
-  const recentKeys = history.slice(-5).reverse();
-  recentKeys.forEach((key, index) => {
-    const li = document.createElement('li');
-    li.textContent = key;
-    keyHistoryList.appendChild(li);
-  });
-}
-
-function addToHistory(key) {
-  let history = JSON.parse(localStorage.getItem('keyHistory')) || [];
-  history.push(key);
-  localStorage.setItem('keyHistory', JSON.stringify(history));
-  loadKeyHistory();
-}
 
 function startProcess() {
   if (!canGenerateKey()) {
     showToast('You can generate a key only once every 12 hours');
     return;
   }
-  currentCheckpoint = 0;
-  showAdForCheckpoint(); // Сразу показываем рекламу (2 раза)
+  
+  adClickCount++; // Увеличиваем счетчик
+  
+  if (adClickCount < 3) { // Если меньше 3 кликов
+    if (adClickCount === 1 || adClickCount === 2) {
+      window.open(adLink, '_blank');
+      showToast(`Please visit the ad link (${adClickCount}/2)`);
+    }
+  } else {
+    // После 2 показов рекламы (3 клика) открываем чекпоинт
+    currentCheckpoint = 0;
+    openCheckpoint();
+    adClickCount = 0; // Сбрасываем счетчик
+  }
 }
 
 function continueProcess() {
-  currentCheckpoint = 1;
-  showAdForCheckpoint(); // Сразу показываем рекламу (2 раза)
+  // Аналогичная логика для продолжения
+  adClickCount++;
+  
+  if (adClickCount < 3) {
+    if (adClickCount === 1 || adClickCount === 2) {
+      window.open(adLink, '_blank');
+      showToast(`Please visit the ad link (${adClickCount}/2)`);
+    }
+  } else {
+    currentCheckpoint = 1;
+    openCheckpoint();
+    adClickCount = 0;
+  }
 }
 
 function openCheckpoint() {
