@@ -871,13 +871,10 @@
  
   <script>
     // CAPTCHA Verification
-    function onVerified(response) {
-      // Капча пройдена
-      document.getElementById("captchaContainer").style.display = "none";
-      // Показываем модальное окно с политикой конфиденциальности
-      document.getElementById("privacyModal").style.display = "flex";
-    }
-    window.onVerified = onVerified;
+window.onVerified = function(response) {
+  document.getElementById("captchaContainer").style.display = "none";
+  document.getElementById("privacyModal").style.display = "flex";
+};
 
     // Обработчик принятия политики конфиденциальности
     document.getElementById('privacyAcceptBtn').addEventListener('click', function() {
