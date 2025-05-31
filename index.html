@@ -969,23 +969,27 @@
       loadKeyHistory();
  
       // Проверяем, вернулись ли мы с чекпоинта
-      const urlParams = new URLSearchParams(window.location.search);
-      const checkpoint = urlParams.get('checkpoint');
+  const urlParams = new URLSearchParams(window.location.search);
+  const checkpoint = urlParams.get('checkpoint');
+  const returnedToken = urlParams.get('token');
+
+  const storedToken = localStorage.getItem('checkpointToken');
  
-      if (checkpoint === 'completed') {
-        checkpointCompleted = true;
-        currentStep = 1;
-        updateProgress();
-        showToast('Checkpoint 1 completed!');
-      }
+  if (checkpoint === 'completed' && returnedToken === storedToken) {
+    localStorage.setItem('step1Completed', 'true'); // флаг
+    checkpointCompleted = true;
+    currentStep = 1;
+    updateProgress();
+    showToast('Checkpoint 1 completed!');
+  }
  
-      startBtn.addEventListener('click', startProcess);
-      continueBtn.addEventListener('click', continueProcess);
-      generateBtn.addEventListener('click', generateKey);
-      copyBtn.addEventListener('click', copyKey);
-      visitLinkBtn.addEventListener('click', visitCheckpointLink);
-      cancelModalBtn.addEventListener('click', closeModal);
-    }
+  startBtn.addEventListener('click', startProcess);
+  continueBtn.addEventListener('click', continueProcess);
+  generateBtn.addEventListener('click', generateKey);
+  copyBtn.addEventListener('click', copyKey);
+  visitLinkBtn.addEventListener('click', visitCheckpointLink);
+  cancelModalBtn.addEventListener('click', closeModal);
+}
  
     function loadKeyHistory() {
       const history = JSON.parse(localStorage.getItem('keyHistory')) || [];
@@ -1018,10 +1022,14 @@
         showToast('You can generate a key only once every 12 hours');
         return;
       }
- 
-      // Открываем первый чекпоинт в этой же вкладке
-      window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href);
-    }
+
+  // Генерация токена и сохранение в localStorage
+  const token = 'token_' + Math.random().toString(36).substring(2) + Date.now();
+  localStorage.setItem('checkpointToken', token);
+
+  // Перенаправление с токеном
+  window.location.href = checkpointLinks[0] + '?token=' + token + '&source=' + encodeURIComponent(window.location.href);
+}
  
     function continueProcess() {
       // На первой странице кнопка Continue неактивна
