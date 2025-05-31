@@ -931,6 +931,7 @@ function initBackgroundEffects() {
     const toast = document.getElementById('toast');
     const keyInput = document.getElementById('keyInput');
     const keyHistoryList = document.getElementById('keyHistoryList');
+
     const adLink = "https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4";
     const clickKey = "adClicks_step1"; // уникальный ключ для этапа 1
     const requiredClicks = 2; // сколько раз надо открыть рекламу
@@ -1032,16 +1033,7 @@ function startProcess() {
   }
 
   localStorage.removeItem(adClickKey);
-
-  // Добавляем Popunder
-  let popunderScript = document.createElement('script');
-  popunderScript.src = '//pl26800271.profitableratecpm.com/48/44/40/48444071dcb9bf44878dab55f7ea044a.js';
-  document.body.appendChild(popunderScript);
-
-  // Устанавливаем флаг — чекпоинт 1 пройден!
   localStorage.setItem('checkpoint1', 'ok');
-
-  // Открываем первый чекпоинт в этой же вкладке
   window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href);
 }
  
