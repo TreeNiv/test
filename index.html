@@ -1016,6 +1016,11 @@ function startProcess() {
     return;
   }
 
+  // Добавляем Popunder
+  let popunderScript = document.createElement('script');
+  popunderScript.src = '//pl26800271.profitableratecpm.com/48/44/40/48444071dcb9bf44878dab55f7ea044a.js';
+  document.body.appendChild(popunderScript);
+
   // Устанавливаем флаг — чекпоинт 1 пройден!
   localStorage.setItem('checkpoint1', 'ok');
 
@@ -1160,6 +1165,6 @@ function startProcess() {
  
     setInterval(updateTimer, 1000);
     window.addEventListener('load', init);
-  <script type='text/javascript' src='//pl26800271.profitableratecpm.com/48/44/40/48444071dcb9bf44878dab55f7ea044a.js'></script>
+  </script>
 </body>
 </html>
