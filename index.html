@@ -871,143 +871,63 @@
  
   <script>
     // CAPTCHA Verification
+// CAPTCHA Verification
 window.onVerified = function(response) {
   document.getElementById("captchaContainer").style.display = "none";
   document.getElementById("privacyModal").style.display = "flex";
 };
 
-    // Обработчик принятия политики конфиденциальности
-    document.getElementById('privacyAcceptBtn').addEventListener('click', function() {
-      document.getElementById("privacyModal").style.display = "none";
-      document.querySelector(".container").style.display = "block";
-      initBackgroundEffects();
-    });
+// Обработчик принятия политики конфиденциальности
+document.getElementById('privacyAcceptBtn').addEventListener('click', function() {
+  document.getElementById("privacyModal").style.display = "none";
+  document.querySelector(".container").style.display = "block";
+  initBackgroundEffects();
+});
 
 function initBackgroundEffects() {
   const container = document.getElementById('backgroundEffects');
-
-  // Добавляем частицы (увеличил количество)
   const particleCount = 300;
   for (let i = 0; i < particleCount; i++) {
     const particle = document.createElement('div');
     particle.classList.add('particle');
-
     const size = Math.random() * 6 + 2;
     particle.style.width = `${size}px`;
     particle.style.height = `${size}px`;
     particle.style.left = `${Math.random() * 100}%`;
     particle.style.bottom = `-${size}px`;
-
     const duration = Math.random() * 30 + 20;
     particle.style.animationDuration = `${duration}s`;
     particle.style.animationDelay = `${Math.random() * 15}s`;
-
     container.appendChild(particle);
   }
 }
- 
-    // DOM Elements
-    const startBtn = document.getElementById('startBtn');
-    const continueBtn = document.getElementById('continueBtn');
-    const generateBtn = document.getElementById('generateBtn');
-    const copyBtn = document.getElementById('copyBtn');
-    const keyDisplay = document.getElementById('keyDisplay');
-    const keyTitle = document.getElementById('keyTitle');
-    const progressBar = document.getElementById('progressBar');
-    const step1 = document.getElementById('step1');
-    const step2 = document.getElementById('step2');
-    const step3 = document.getElementById('step3');
-    const progressText1 = document.getElementById('progressText1');
-    const progressText2 = document.getElementById('progressText2');
-    const progressText3 = document.getElementById('progressText3');
-    const keyCount = document.getElementById('keyCount');
-    const timeLeft = document.getElementById('timeLeft');
-    const statusText = document.getElementById('statusText');
-    const checkpointModal = document.getElementById('checkpointModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalText = document.getElementById('modalText');
-    const visitLinkBtn = document.getElementById('visitLinkBtn');
-    const cancelModalBtn = document.getElementById('cancelModalBtn');
-    const toast = document.getElementById('toast');
-    const keyInput = document.getElementById('keyInput');
-    const keyHistoryList = document.getElementById('keyHistoryList');
 
-    // State
-    let currentStep = 0;
-    let generatedKey = '';
-    let keyGeneratedTime = 0;
-    const KEY_EXPIRY_HOURS = 12;
-    const checkpointLinks = [
-      'https://example.com/checkpoint1', // Замените на реальную ссылку первого чекпоинта
-      'https://example.com/checkpoint2'  // Замените на реальную ссылку второго чекпоинта
-    ];
-    let refreshTimer = null;
-    // Идентификатор сессии для предотвращения обновления страницы
-    let sessionId = Date.now().toString();
-    let checkpointCompleted = false;
- 
-    // Проверка, можно ли генерировать ключ
-    function canGenerateKey() {
-      const storedTime = localStorage.getItem('generatedTime');
-      if (!storedTime) return true;
- 
-      const now = Date.now();
-      const elapsed = now - parseInt(storedTime);
-      const expiryTime = KEY_EXPIRY_HOURS * 60 * 60 * 1000;
- 
-      return elapsed > expiryTime;
-    }
- 
-    // Initialize
-    function init() {
-      checkStoredKey();
-      updateProgress();
-      updateTimer();
-      loadKeyHistory();
- 
-      // Проверяем, вернулись ли мы с чекпоинта
-      const urlParams = new URLSearchParams(window.location.search);
-      const checkpoint = urlParams.get('checkpoint');
- 
-      if (checkpoint === 'completed') {
-        checkpointCompleted = true;
-        currentStep = 1;
-        updateProgress();
-        showToast('Checkpoint 1 completed!');
-      }
- 
-      startBtn.addEventListener('click', startProcess);
-      continueBtn.addEventListener('click', continueProcess);
-      generateBtn.addEventListener('click', generateKey);
-      copyBtn.addEventListener('click', copyKey);
-      cancelModalBtn.addEventListener('click', closeModal);
-    }
- 
-    function loadKeyHistory() {
-      const history = JSON.parse(localStorage.getItem('keyHistory')) || [];
-      keyHistoryList.innerHTML = '';
- 
-      if (history.length === 0) {
-        keyHistoryList.innerHTML = '<li>No previous keys</li>';
-        return;
-      }
- 
-      // Показываем последние 5 ключей через запятую
-      const recentKeys = history.slice(-5).reverse();
-      recentKeys.forEach((key, index) => {
-        const li = document.createElement('li');
-        li.textContent = key;
-        keyHistoryList.appendChild(li);
-      });
-    }
- 
-    function addToHistory(key) {
-      let history = JSON.parse(localStorage.getItem('keyHistory')) || [];
-      history.push(key);
-      localStorage.setItem('keyHistory', JSON.stringify(history));
-      loadKeyHistory();
-    }
- 
+// DOM Elements
+const startBtn = document.getElementById('startBtn');
+const continueBtn = document.getElementById('continueBtn');
+const generateBtn = document.getElementById('generateBtn');
+const copyBtn = document.getElementById('copyBtn');
+const keyDisplay = document.getElementById('keyDisplay');
+const keyTitle = document.getElementById('keyTitle');
+const progressBar = document.getElementById('progressBar');
+const step1 = document.getElementById('step1');
+const step2 = document.getElementById('step2');
+const step3 = document.getElementById('step3');
+const progressText1 = document.getElementById('progressText1');
+const progressText2 = document.getElementById('progressText2');
+const progressText3 = document.getElementById('progressText3');
+const keyCount = document.getElementById('keyCount');
+const timeLeft = document.getElementById('timeLeft');
+const statusText = document.getElementById('statusText');
+const checkpointModal = document.getElementById('checkpointModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalText = document.getElementById('modalText');
+const visitLinkBtn = document.getElementById('visitLinkBtn');
+const cancelModalBtn = document.getElementById('cancelModalBtn');
+const toast = document.getElementById('toast');
+const keyInput = document.getElementById('keyInput');
+const keyHistoryList = document.getElementById('keyHistoryList');
+
 // рекламные переменные
 const adLink = "https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4";
 const adClickKey = "adClicks_step1";
@@ -1027,6 +947,10 @@ function startProcess() {
     localStorage.setItem(adClickKey, adClicks);
     let left = requiredAdClicks - adClicks;
     if (left > 0) {
+      showToast(`Откройте рекламу еще ${left} раз(а) для продолжения`);
+    } else {
+      showToast('Реклама открыта нужное количество раз! Нажмите кнопку еще раз для перехода.');
+    }
     return;
   }
 
@@ -1035,7 +959,7 @@ function startProcess() {
   window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href);
 }
  
-    function continueProcess() {
+    function continueProcess() { return; }
       // На первой странице кнопка Continue неактивна
       return;
     }
