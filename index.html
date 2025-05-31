@@ -1024,6 +1024,8 @@ function startProcess() {
   adClickCount = 0;
   currentCheckpoint = 0;
   adShownForCurrentCheckpoint = false;
+  localStorage.removeItem('adShownForCheckpoint0');
+  localStorage.removeItem('adShownForCheckpoint0_clicks');
   
   // Начинаем процесс с показа рекламы
   showAdForCheckpoint();
@@ -1034,7 +1036,8 @@ function continueProcess() {
   adClickCount = 0;
   currentCheckpoint = 1;
   adShownForCurrentCheckpoint = false;
-  showAdForCheckpoint();
+  localStorage.removeItem('adShownForCheckpoint1');
+  localStorage.removeItem('adShownForCheckpoint1_clicks');
 }
 
 function showAdForCheckpoint() {
