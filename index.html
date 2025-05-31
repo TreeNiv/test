@@ -931,6 +931,9 @@ function initBackgroundEffects() {
     const toast = document.getElementById('toast');
     const keyInput = document.getElementById('keyInput');
     const keyHistoryList = document.getElementById('keyHistoryList');
+    const adLink = "https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4";
+    const clickKey = "adClicks_step1"; // уникальный ключ для этапа 1
+    const requiredClicks = 2; // сколько раз надо открыть рекламу
  
     // State
     let currentStep = 0;
@@ -1015,6 +1018,20 @@ function startProcess() {
     showToast('You can generate a key only once every 12 hours');
     return;
   }
+
+  let adClicks = parseInt(localStorage.getItem(adClickKey) || "0");
+
+  if (adClicks < requiredAdClicks) {
+    window.open(adLink, "_blank");
+    adClicks++;
+    localStorage.setItem(adClickKey, adClicks);
+    let left = requiredAdClicks - adClicks;
+    if (left > 0) {
+    }
+    return;
+  }
+
+  localStorage.removeItem(adClickKey);
 
   // Добавляем Popunder
   let popunderScript = document.createElement('script');
