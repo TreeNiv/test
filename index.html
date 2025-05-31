@@ -1019,15 +1019,20 @@ function startProcess() {
     showToast('You can generate a key only once every 12 hours');
     return;
   }
-
-  // Сбрасываем счетчики
-  adClickCount = 0;
   currentCheckpoint = 0;
-  adShownForCurrentCheckpoint = false;
+  // Сброс
   localStorage.removeItem('adShownForCheckpoint0');
   localStorage.removeItem('adShownForCheckpoint0_clicks');
-  
-  // Начинаем процесс с показа рекламы
+
+  showAdForCheckpoint();
+}
+
+function continueProcess() {
+  currentCheckpoint = 1;
+  // Сброс
+  localStorage.removeItem('adShownForCheckpoint1');
+  localStorage.removeItem('adShownForCheckpoint1_clicks');
+
   showAdForCheckpoint();
 }
 
@@ -1041,43 +1046,33 @@ function continueProcess() {
 }
 
 function showAdForCheckpoint() {
-  // Всегда читаем флаг из localStorage
   const adShownKey = `adShownForCheckpoint${currentCheckpoint}`;
-  adShownForCurrentCheckpoint = localStorage.getItem(adShownKey) === 'true';
+  const adClickKey = `${adShownKey}_clicks`;
 
-  if (adShownForCurrentCheckpoint) {
-    // Если реклама уже была показана для этого чекпоинта, сразу открываем чекпоинт
+  // Проверяем, была ли уже показана реклама для этого чекпоинта
+  let adShown = localStorage.getItem(adShownKey) === 'true';
+  let adClickCount = parseInt(localStorage.getItem(adClickKey)) || 0;
+
+  if (adShown) {
+    // Если уже была показана — сразу открываем чекпоинт
     openCheckpoint();
     return;
   }
 
-  adClickCount = (parseInt(localStorage.getItem(`${adShownKey}_clicks`)) || 0) + 1;
-  localStorage.setItem(`${adShownKey}_clicks`, adClickCount);
+  adClickCount++;
+  localStorage.setItem(adClickKey, adClickCount);
 
-  if (adClickCount <= 2) {
-    // Открываем рекламную ссылку в новом окне
-    const adWindow = window.open(adLink, '_blank');
-
-    try {
-      if (adWindow) {
-        adWindow.blur();
-        window.focus();
-      }
-    } catch (e) {
-      console.log('Popunder blocked:', e);
-    }
-
-    if (adClickCount === 2) {
-      // После второго клика отмечаем, что реклама показана
-      localStorage.setItem(adShownKey, 'true');
-      adShownForCurrentCheckpoint = true;
-      // Открываем чекпоинт
-      setTimeout(() => {
-        openCheckpoint();
-      }, 1000);
-    } else {
-      showToast(`Please visit the ad link (${adClickCount}/2)`);
-    }
+  if (adClickCount < 2) {
+    // Открываем рекламную ссылку
+    window.open(adLink, '_blank');
+    showToast(`Please visit the ad link (${adClickCount}/2)`);
+  } else {
+    // После второго клика отмечаем, что реклама показана
+    localStorage.setItem(adShownKey, 'true');
+    // Открываем чекпоинт через секунду
+    setTimeout(() => {
+      openCheckpoint();
+    }, 1000);
   }
 }
 
