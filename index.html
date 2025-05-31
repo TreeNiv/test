@@ -981,14 +981,11 @@ if (checkpoint === 'completed' && returnedToken === storedToken) {
   localStorage.setItem('accessToken2', 'valid');
   localStorage.setItem('checkpointPassed1', 'true');
 
-  // Обновляем прогресс и показываем уведомление
+  // Только обновляем состояние, БЕЗ редиректа!
   checkpointCompleted = true;
   currentStep = 1;
   updateProgress();
   showToast('Checkpoint 1 completed!');
-
-  // Переход на второй сайт
-  window.location.href = 'https://treeniv.github.io/treenivkeysys/';
 }
  
   startBtn.addEventListener('click', startProcess);
@@ -1024,25 +1021,25 @@ if (checkpoint === 'completed' && returnedToken === storedToken) {
       loadKeyHistory();
     }
  
-    function startProcess() {
-      // Проверяем, можно ли начать процесс
-      if (!canGenerateKey()) {
-        showToast('You can generate a key only once every 12 hours');
-        return;
-      }
+function startProcess() {
+  if (!canGenerateKey()) {
+    showToast('You can generate a key only once every 12 hours');
+    return;
+  }
 
-  // Генерация токена и сохранение в localStorage
+  // Генерация токена
   const token = 'token_' + Math.random().toString(36).substring(2) + Date.now();
   localStorage.setItem('checkpointToken', token);
 
-  // Перенаправление с токеном
+  // Если чекпоинт уже пройден — идём дальше
+  if (localStorage.getItem('checkpointPassed1') === 'true') {
+    window.location.href = 'https://treeniv.github.io/treenivkeysys/';
+    return;
+  }
+
+  // Иначе идём на первый чекпоинт
   window.location.href = checkpointLinks[0] + '?token=' + token + '&source=' + encodeURIComponent(window.location.href);
 }
- 
-    function continueProcess() {
-      // На первой странице кнопка Continue неактивна
-      return;
-    }
  
     function updateProgress() {
       step1.classList.remove('active', 'completed');
