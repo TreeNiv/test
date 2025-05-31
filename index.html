@@ -884,6 +884,8 @@ document.getElementById('privacyAcceptBtn').addEventListener('click', function()
   initBackgroundEffects();
 });
 
+function closeModal() {}
+
 function initBackgroundEffects() {
   const container = document.getElementById('backgroundEffects');
   const particleCount = 300;
@@ -1093,6 +1095,29 @@ function startProcess() {
         toast.classList.remove('active');
       }, 3000);
     }
+
+function init() {
+  checkStoredKey();
+  updateProgress();
+  updateTimer();
+  loadKeyHistory();
+
+  // Проверяем, вернулись ли мы с чекпоинта
+  const urlParams = new URLSearchParams(window.location.search);
+  const checkpoint = urlParams.get('checkpoint');
+
+  if (checkpoint === 'completed') {
+    checkpointCompleted = true;
+    currentStep = 1;
+    updateProgress();
+  }
+
+  startBtn.addEventListener('click', startProcess);
+  continueBtn.addEventListener('click', continueProcess);
+  generateBtn.addEventListener('click', generateKey);
+  copyBtn.addEventListener('click', copyKey);
+  cancelModalBtn.addEventListener('click', closeModal);
+}
  
     setInterval(updateTimer, 1000);
     window.addEventListener('load', init);
