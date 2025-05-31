@@ -885,23 +885,18 @@ document.getElementById('privacyAcceptBtn').addEventListener('click', function()
 
 function initBackgroundEffects() {
   const container = document.getElementById('backgroundEffects');
-
-  // Добавляем частицы (увеличил количество)
   const particleCount = 300;
   for (let i = 0; i < particleCount; i++) {
     const particle = document.createElement('div');
     particle.classList.add('particle');
-
     const size = Math.random() * 6 + 2;
     particle.style.width = `${size}px`;
     particle.style.height = `${size}px`;
     particle.style.left = `${Math.random() * 100}%`;
     particle.style.bottom = `-${size}px`;
-
     const duration = Math.random() * 30 + 20;
     particle.style.animationDuration = `${duration}s`;
     particle.style.animationDelay = `${Math.random() * 15}s`;
-
     container.appendChild(particle);
   }
 }
@@ -938,14 +933,15 @@ let generatedKey = '';
 let keyGeneratedTime = 0;
 const KEY_EXPIRY_HOURS = 12;
 const checkpointLinks = [
-  'https://example.com/checkpoint1', // Замените на реальную ссылку первого чекпоинта
-  'https://example.com/checkpoint2'  // Замените на реальную ссылку второго чекпоинта
+  'https://example.com/checkpoint1',
+  'https://example.com/checkpoint2'
 ];
 const adLink = 'https://www.profitableratecpm.com/srddr2t9?key=bf6f75b240992269ae27f4ae790191e4';
 let adClickCount = 0;
 let currentCheckpoint = 0;
 let refreshTimer = null;
 let sessionId = Date.now().toString();
+let adShownForCurrentCheckpoint = false;
 
 // Проверка, можно ли генерировать ключ
 function canGenerateKey() {
@@ -965,6 +961,26 @@ function init() {
   updateProgress();
   updateTimer();
   loadKeyHistory();
+
+  // Проверяем, вернулись ли мы с чекпоинта
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('checkpoint')) {
+    const checkpoint = urlParams.get('checkpoint');
+    
+    if (checkpoint === '1') {
+      currentStep = 1;
+      updateProgress();
+      showToast('Checkpoint 1 completed!');
+      // Очищаем параметры URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (checkpoint === '2') {
+      currentStep = 2;
+      updateProgress();
+      showToast('Checkpoint 2 completed!');
+      // Очищаем параметры URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
 
   startBtn.addEventListener('click', startProcess);
   continueBtn.addEventListener('click', continueProcess);
@@ -1004,30 +1020,52 @@ function startProcess() {
     return;
   }
 
-  // Сбрасываем счетчик кликов по рекламе
+  // Сбрасываем счетчики
   adClickCount = 0;
   currentCheckpoint = 0;
+  adShownForCurrentCheckpoint = false;
   
-  // Открываем рекламу первый раз
-  openAdLink();
+  // Начинаем процесс с показа рекламы
+  showAdForCheckpoint();
 }
 
 function continueProcess() {
-  // Продолжаем процесс после первого чекпоинта
+  // Продолжаем процесс для второго чекпоинта
   adClickCount = 0;
   currentCheckpoint = 1;
-  openAdLink();
+  adShownForCurrentCheckpoint = false;
+  showAdForCheckpoint();
 }
 
-function openAdLink() {
+function showAdForCheckpoint() {
+  if (adShownForCurrentCheckpoint) {
+    // Если реклама уже была показана для этого чекпоинта, сразу открываем чекпоинт
+    openCheckpoint();
+    return;
+  }
+
   adClickCount++;
   
   if (adClickCount <= 2) {
     // Открываем рекламную ссылку в новом окне
-    window.open(adLink, '_blank');
+    const adWindow = window.open(adLink, '_blank');
+    
+    // Попробуем добавить popunder (может не работать из-за блокировщиков)
+    try {
+      if (adWindow) {
+        adWindow.blur();
+        window.focus();
+      }
+    } catch (e) {
+      console.log('Popunder blocked:', e);
+    }
     
     if (adClickCount === 2) {
-      // После второго клика открываем чекпоинт
+      // После второго клика отмечаем, что реклама показана
+      adShownForCurrentCheckpoint = true;
+      // Сохраняем в localStorage, что реклама была показана для этого чекпоинта
+      localStorage.setItem(`adShownForCheckpoint${currentCheckpoint}`, 'true');
+      // Открываем чекпоинт
       setTimeout(() => {
         openCheckpoint();
       }, 1000);
@@ -1043,7 +1081,7 @@ function openCheckpoint() {
     modalTitle.textContent = 'Checkpoint 1';
     modalText.textContent = 'Please visit the following link and return to this page to continue.';
     visitLinkBtn.onclick = function() {
-      window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href);
+      window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=1';
     };
     checkpointModal.classList.add('active');
   } else if (currentCheckpoint === 1) {
@@ -1051,7 +1089,7 @@ function openCheckpoint() {
     modalTitle.textContent = 'Checkpoint 2';
     modalText.textContent = 'Please visit the following link and return to this page to continue.';
     visitLinkBtn.onclick = function() {
-      window.location.href = checkpointLinks[1] + '?source=' + encodeURIComponent(window.location.href);
+      window.location.href = checkpointLinks[1] + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=2';
     };
     checkpointModal.classList.add('active');
   }
@@ -1193,6 +1231,14 @@ function checkStoredKey() {
       updateProgress();
     }
   }
+
+  // Проверяем, была ли уже показана реклама для чекпоинтов
+  if (localStorage.getItem('adShownForCheckpoint0') === 'true') {
+    adShownForCurrentCheckpoint = true;
+  }
+  if (localStorage.getItem('adShownForCheckpoint1') === 'true') {
+    adShownForCurrentCheckpoint = true;
+  }
 }
 
 function updateTimer() {
@@ -1244,30 +1290,11 @@ function setupAutoRefresh() {
       localStorage.removeItem('generatedTime');
       location.reload();
     }
-  }, 60000); // Проверка каждую минуту
+  }, 60000);
 }
 
 setInterval(updateTimer, 1000);
 window.addEventListener('load', init);
-
-// Проверяем, вернулись ли мы с чекпоинта
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.has('checkpoint')) {
-  const checkpoint = urlParams.get('checkpoint');
-  
-  if (checkpoint === '1') {
-    currentStep = 1;
-    updateProgress();
-    showToast('Checkpoint 1 completed!');
-  } else if (checkpoint === '2') {
-    currentStep = 2;
-    updateProgress();
-    showToast('Checkpoint 2 completed!');
-  }
-  
-  // Очищаем параметры URL
-  window.history.replaceState({}, document.title, window.location.pathname);
-}
   </script>
 </body>
 </html>
