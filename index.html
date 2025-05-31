@@ -1012,16 +1012,19 @@
       loadKeyHistory();
     }
  
-    function startProcess() {
-      // Проверяем, можно ли начать процесс
-      if (!canGenerateKey()) {
-        showToast('You can generate a key only once every 12 hours');
-        return;
-      }
- 
-      // Открываем первый чекпоинт в этой же вкладке
-      window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href);
-    }
+function startProcess() {
+  // Проверяем, можно ли начать процесс
+  if (!canGenerateKey()) {
+    showToast('You can generate a key only once every 12 hours');
+    return;
+  }
+
+  // Устанавливаем флаг — чекпоинт 1 пройден!
+  localStorage.setItem('checkpoint1', 'ok');
+
+  // Открываем первый чекпоинт в этой же вкладке
+  window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href);
+}
  
     function continueProcess() {
       // На первой странице кнопка Continue неактивна
