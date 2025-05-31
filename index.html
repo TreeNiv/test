@@ -982,24 +982,77 @@ function openCheckpointModal() {
   }
 }
 
+// Добавляем недостающую функцию
+function canGenerateKey() {
+  const storedTime = localStorage.getItem('generatedTime');
+  if (!storedTime) return true;
+
+  const now = Date.now();
+  const elapsed = now - parseInt(storedTime);
+  const expiryTime = KEY_EXPIRY_HOURS * 60 * 60 * 1000;
+
+  return elapsed > expiryTime;
+}
+
+// Исправляем функцию handleAdBeforeCheckpoint
 function handleAdBeforeCheckpoint(checkpointUrl, checkpointNumber) {
   let adShownCount = parseInt(localStorage.getItem('adShownCount')) || 0;
   adShownCount++;
   localStorage.setItem('adShownCount', adShownCount.toString());
   
   // Всегда открываем рекламу
-  window.open(adLink, '_blank');
+  const adWindow = window.open(adLink, '_blank');
   
   if (adShownCount < 2) {
     showToast(`Please visit the ad link (${adShownCount}/2)`);
+    // Фокусируем окно с рекламой
+    if (adWindow) {
+      adWindow.focus();
+    }
   } else {
     // После 2 показов рекламы переходим на чекпоинт
     setTimeout(() => {
       window.location.href = checkpointUrl + '?source=' + encodeURIComponent(window.location.href) + '&checkpoint=' + checkpointNumber;
       localStorage.removeItem('adShownCount');
       checkpointModal.classList.remove('active');
-    }, 500);
+    }, 1000);
   }
+}
+
+// Добавляем обработчики событий в функцию init
+function init() {
+  checkStoredKey();
+  updateProgress();
+  updateTimer();
+  loadKeyHistory();
+
+  // Проверяем, вернулись ли мы с чекпоинта
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('checkpoint')) {
+    const checkpoint = urlParams.get('checkpoint');
+    
+    if (checkpoint === '1') {
+      currentStep = 1;
+      updateProgress();
+      showToast('Checkpoint 1 completed!');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (checkpoint === '2') {
+      currentStep = 2;
+      updateProgress();
+      showToast('Checkpoint 2 completed!');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }
+
+  // Добавляем обработчики событий
+  startBtn.addEventListener('click', startProcess);
+  continueBtn.addEventListener('click', continueProcess);
+  generateBtn.addEventListener('click', generateKey);
+  copyBtn.addEventListener('click', copyKey);
+  visitLinkBtn.addEventListener('click', function(e) {
+    e.preventDefault(); // Предотвращаем стандартное поведение
+  });
+  cancelModalBtn.addEventListener('click', closeModal);
 }
 
 function closeModal() {
