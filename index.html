@@ -1038,19 +1038,23 @@ function continueProcess() {
 }
 
 function showAdForCheckpoint() {
+  // Всегда читаем флаг из localStorage
+  const adShownKey = `adShownForCheckpoint${currentCheckpoint}`;
+  adShownForCurrentCheckpoint = localStorage.getItem(adShownKey) === 'true';
+
   if (adShownForCurrentCheckpoint) {
     // Если реклама уже была показана для этого чекпоинта, сразу открываем чекпоинт
     openCheckpoint();
     return;
   }
 
-  adClickCount++;
-  
+  adClickCount = (parseInt(localStorage.getItem(`${adShownKey}_clicks`)) || 0) + 1;
+  localStorage.setItem(`${adShownKey}_clicks`, adClickCount);
+
   if (adClickCount <= 2) {
     // Открываем рекламную ссылку в новом окне
     const adWindow = window.open(adLink, '_blank');
-    
-    // Попробуем добавить popunder (может не работать из-за блокировщиков)
+
     try {
       if (adWindow) {
         adWindow.blur();
@@ -1059,12 +1063,11 @@ function showAdForCheckpoint() {
     } catch (e) {
       console.log('Popunder blocked:', e);
     }
-    
+
     if (adClickCount === 2) {
       // После второго клика отмечаем, что реклама показана
+      localStorage.setItem(adShownKey, 'true');
       adShownForCurrentCheckpoint = true;
-      // Сохраняем в localStorage, что реклама была показана для этого чекпоинта
-      localStorage.setItem(`adShownForCheckpoint${currentCheckpoint}`, 'true');
       // Открываем чекпоинт
       setTimeout(() => {
         openCheckpoint();
