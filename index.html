@@ -896,14 +896,14 @@
         particle.classList.add('particle');
  
         const size = Math.random() * 6 + 2;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.bottom = `-${size}px`;
+        particle.style.width = ${size}px;
+        particle.style.height = ${size}px;
+        particle.style.left = ${Math.random() * 100}%;
+        particle.style.bottom = -${size}px;
  
         const duration = Math.random() * 30 + 20;
-        particle.style.animationDuration = `${duration}s`;
-        particle.style.animationDelay = `${Math.random() * 15}s`;
+        particle.style.animationDuration = ${duration}s;
+        particle.style.animationDelay = ${Math.random() * 15}s;
  
         container.appendChild(particle);
       }
@@ -969,32 +969,23 @@
       loadKeyHistory();
  
       // Проверяем, вернулись ли мы с чекпоинта
-  const urlParams = new URLSearchParams(window.location.search);
-  const checkpoint = urlParams.get('checkpoint');
-  const returnedToken = urlParams.get('token');
-
-  const storedToken = localStorage.getItem('checkpointToken');
+      const urlParams = new URLSearchParams(window.location.search);
+      const checkpoint = urlParams.get('checkpoint');
  
-if (checkpoint === 'completed' && returnedToken === storedToken) {
-  // Сохраняем флаги
-  localStorage.setItem('step1Completed', 'true');
-  localStorage.setItem('accessToken2', 'valid');
-  localStorage.setItem('checkpointPassed1', 'true');
-
-  // Только обновляем состояние, БЕЗ редиректа!
-  checkpointCompleted = true;
-  currentStep = 1;
-  updateProgress();
-  showToast('Checkpoint 1 completed!');
-}
+      if (checkpoint === 'completed') {
+        checkpointCompleted = true;
+        currentStep = 1;
+        updateProgress();
+        showToast('Checkpoint 1 completed!');
+      }
  
-  startBtn.addEventListener('click', startProcess);
-  continueBtn.addEventListener('click', continueProcess);
-  generateBtn.addEventListener('click', generateKey);
-  copyBtn.addEventListener('click', copyKey);
-  visitLinkBtn.addEventListener('click', visitCheckpointLink);
-  cancelModalBtn.addEventListener('click', closeModal);
-}
+      startBtn.addEventListener('click', startProcess);
+      continueBtn.addEventListener('click', continueProcess);
+      generateBtn.addEventListener('click', generateKey);
+      copyBtn.addEventListener('click', copyKey);
+      visitLinkBtn.addEventListener('click', visitCheckpointLink);
+      cancelModalBtn.addEventListener('click', closeModal);
+    }
  
     function loadKeyHistory() {
       const history = JSON.parse(localStorage.getItem('keyHistory')) || [];
@@ -1021,25 +1012,21 @@ if (checkpoint === 'completed' && returnedToken === storedToken) {
       loadKeyHistory();
     }
  
-function startProcess() {
-  if (!canGenerateKey()) {
-    showToast('You can generate a key only once every 12 hours');
-    return;
-  }
-
-  // Генерация токена
-  const token = 'token_' + Math.random().toString(36).substring(2) + Date.now();
-  localStorage.setItem('checkpointToken', token);
-
-  // Если чекпоинт уже пройден — идём дальше
-  if (localStorage.getItem('checkpointPassed1') === 'true') {
-    window.location.href = 'https://treeniv.github.io/treenivkeysys/';
-    return;
-  }
-
-  // Иначе идём на первый чекпоинт
-  window.location.href = checkpointLinks[0] + '?token=' + token + '&source=' + encodeURIComponent(window.location.href);
-}
+    function startProcess() {
+      // Проверяем, можно ли начать процесс
+      if (!canGenerateKey()) {
+        showToast('You can generate a key only once every 12 hours');
+        return;
+      }
+ 
+      // Открываем первый чекпоинт в этой же вкладке
+      window.location.href = checkpointLinks[0] + '?source=' + encodeURIComponent(window.location.href);
+    }
+ 
+    function continueProcess() {
+      // На первой странице кнопка Continue неактивна
+      return;
+    }
  
     function updateProgress() {
       step1.classList.remove('active', 'completed');
@@ -1066,7 +1053,7 @@ function startProcess() {
       }
  
       const hasKey = localStorage.getItem('generatedKey') ? 1 : 0;
-      keyCount.textContent = `${hasKey}/1`;
+      keyCount.textContent = ${hasKey}/1;
     }
  
     function generateKey() {
@@ -1112,7 +1099,7 @@ function startProcess() {
         if (elapsed < expiryTime) {
           generatedKey = storedKey;
           keyGeneratedTime = parseInt(storedTime);
-          keyDisplay.innerHTML = `<div class="key">${storedKey}</div>`;
+          keyDisplay.innerHTML = <div class="key">${storedKey}</div>;
           keyTitle.textContent = 'YOUR PREMIUM KEY';
           copyBtn.disabled = false;
           statusText.textContent = 'ACTIVE';
@@ -1162,7 +1149,7 @@ function startProcess() {
       const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
  
-      timeLeft.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      timeLeft.textContent = ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')};
     }
  
     function showToast(message) {
