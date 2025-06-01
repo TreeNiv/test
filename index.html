@@ -1231,6 +1231,15 @@ function checkStoredKey() {
   }
 }
 
+// Проверяем, нужно ли выполнить чекпоинт 1
+if (localStorage.getItem('checkpoint1') !== 'ok') {
+  // Устанавливаем флаг чекпоинта 1
+  localStorage.setItem('checkpoint1', 'ok');
+  
+  // Перенаправляем на второй сайт
+  window.location.href = 'https:/treenivkeysys.netlify.app';
+}
+
 function updateTimer() {
   const storedTime = localStorage.getItem('generatedTime');
 
